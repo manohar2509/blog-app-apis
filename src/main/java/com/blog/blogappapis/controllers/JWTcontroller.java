@@ -1,6 +1,8 @@
 package com.blog.blogappapis.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -11,14 +13,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.blog.blogappapis.exceptions.ResourceNotFoundException;
 import com.blog.blogappapis.payloads.AuthDto;
+import com.blog.blogappapis.payloads.UserDto;
 import com.blog.blogappapis.services.JWTService;
+import com.blog.blogappapis.services.UserService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class JWTcontroller {
 
     @Autowired
     private JWTService jwtService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -33,5 +40,13 @@ public class JWTcontroller {
         else{
             throw new ResourceNotFoundException("User","Email and Password",0);
         } 
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserDto> registerNewUser(@RequestBody UserDto userDto) {
+        UserDto registeredUser = userService.registerNewUser(userDto);
+        
+        return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
+        
     }
 }
